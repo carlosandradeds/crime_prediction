@@ -10,6 +10,7 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
 </head>
 <body>
@@ -37,35 +38,13 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            const density = {};  // Store density information here
+            const heatData = predictions.map(prediction => [prediction.latitude, prediction.longitude, 1]);
 
-            for (const prediction of predictions) {
-                const { latitude, longitude, period } = prediction;
-                const key = `${latitude},${longitude}`;
-                density[key] = (density[key] || 0) + 1;
-            }
-
-            const maxDensity = Math.max(...Object.values(density));
-
-            for (const [key, value] of Object.entries(density)) {
-                const [lat, lon] = key.split(',').map(Number);
-                const color = densityToColor(value, maxDensity);
-                const opacity = Math.min(value / maxDensity, 0.7);
-
-                L.rectangle([
-                    [lat - 0.004, lon - 0.004],
-                    [lat + 0.004, lon + 0.004]
-                ], {
-                    color: color,
-                    fillOpacity: opacity
-                }).addTo(map);
-            }
-        }
-
-        function densityToColor(value, maxValue) {
-            const normalized = value / maxValue;
-            const red = Math.floor(255 * normalized);
-            return `rgb(${red}, 0, 0)`;
+            L.heatLayer(heatData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17,
+            }).addTo(map);
         }
 
         createMap();
