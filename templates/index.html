@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,10 +21,17 @@
             return predictions;
         }
 
+        async function getAverageCoordinates() {
+            const response = await fetch('/average_coordinates/');
+            const coordinates = await response.json();
+            return coordinates;
+        }
+
         async function createMap() {
             const predictions = await getPredictions();
+            const averageCoordinates = await getAverageCoordinates();
 
-            const map = L.map('map').setView([-23.55052, -46.633308], 12);
+            const map = L.map('map').setView([averageCoordinates.latitude, averageCoordinates.longitude], 12);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -66,6 +66,23 @@ def predict_periods():
             
     return predictions
 
+
+@app.get("/average_coordinates/")
+def average_coordinates():
+    # Obter previsões para calcular a média das coordenadas
+    predictions = predict_periods()
+
+    latitudes = [pred['latitude'] for pred in predictions]
+    longitudes = [pred['longitude'] for pred in predictions]
+
+    if latitudes and longitudes:
+        avg_latitude = sum(latitudes) / len(latitudes)
+        avg_longitude = sum(longitudes) / len(longitudes)
+        return {"latitude": avg_latitude, "longitude": avg_longitude}
+    else:
+        return {"latitude": 0, "longitude": 0}  # Default coordinates if no predictions
+
+
 @app.get("/")
 def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
