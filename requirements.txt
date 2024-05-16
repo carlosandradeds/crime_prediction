@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+joblib
+warnings
+holidays
+jinja2
+numpy

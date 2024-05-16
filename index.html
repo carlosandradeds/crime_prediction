@@ -1,0 +1,68 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de Predições de Crimes</title>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        async function getPredictions() {
+            const response = await fetch('/predict/');
+            const predictions = await response.json();
+            return predictions;
+        }
+
+        async function createMap() {
+            const predictions = await getPredictions();
+
+            const map = L.map('map').setView([-23.55052, -46.633308], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const density = {};  // Store density information here
+
+            for (const prediction of predictions) {
+                const { latitude, longitude, period } = prediction;
+                const key = `${latitude},${longitude}`;
+                density[key] = (density[key] || 0) + 1;
+            }
+
+            const maxDensity = Math.max(...Object.values(density));
+
+            for (const [key, value] of Object.entries(density)) {
+                const [lat, lon] = key.split(',').map(Number);
+                const color = densityToColor(value, maxDensity);
+                const opacity = Math.min(value / maxDensity, 0.7);
+
+                L.rectangle([
+                    [lat - 0.004, lon - 0.004],
+                    [lat + 0.004, lon + 0.004]
+                ], {
+                    color: color,
+                    fillOpacity: opacity
+                }).addTo(map);
+            }
+        }
+
+        function densityToColor(value, maxValue) {
+            const normalized = value / maxValue;
+            const red = Math.floor(255 * normalized);
+            return `rgb(${red}, 0, 0)`;
+        }
+
+        createMap();
+    </script>
+</body>
+</html>
