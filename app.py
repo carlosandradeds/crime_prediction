@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 import joblib
 import warnings
-import holidays
 
 warnings.filterwarnings('ignore')
 
@@ -24,7 +23,6 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="templates")
 
-br_holidays = holidays.Brazil()
 
 def process_datetime(dt: datetime):
     features = [
