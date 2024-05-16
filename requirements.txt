@@ -4,3 +4,4 @@ joblib
 holidays
 jinja2
 numpy
+scikit-learn
