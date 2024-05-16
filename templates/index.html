@@ -41,10 +41,10 @@
             const heatData = predictions.map(prediction => [prediction.latitude, prediction.longitude, 1]);
 
             L.heatLayer(heatData, {
-                radius: 35,  // Aumente o raio
-                blur: 20,    // Diminua o desfoque
+                radius: 45,  // Aumentar o raio para 45
+                blur: 10,    // Reduzir o desfoque para 10
                 maxZoom: 17,
-                max: 1.0     // Ajuste o valor máximo de densidade
+                max: 1.0     // Ajustar o valor máximo de densidade
             }).addTo(map);
         }
 
